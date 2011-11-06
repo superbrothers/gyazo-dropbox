@@ -2,7 +2,7 @@ require 'bundler'
 Bundler.require
 
 configure do
-  set :app_key, ENV["app_token"]
+  set :app_key, ENV["app_key"]
   set :app_secret, ENV["app_secret"]
   set :access_type, :app_folder
 
