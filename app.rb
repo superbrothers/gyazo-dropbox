@@ -1,5 +1,5 @@
-require 'bundler'
-Bundler.require
+require 'sinatra'
+require 'dropbox_sdk'
 
 configure do
   set :app_key, ENV["app_key"]
