@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'dropbox_sdk'
+require 'digest/md5'
 
 configure do
   set :app_key, ENV["app_key"]
@@ -18,6 +19,7 @@ end
 
 post '/' do
   data = request[:imagedata][:tempfile].read
-  file = @client.put_file("#{Time.now.strftime("%y%m%d%H%M%S")}.png", data)
+  hash = Digest::MD5.hexdigest(data)
+  file = @client.put_file("#{hash}.png", data)
   @client.shares(file["path"])["url"]
 end
