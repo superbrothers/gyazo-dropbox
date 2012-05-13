@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'dropbox_sdk'
 require 'digest/md5'
+require 'net/https'
+require 'uri'
 
 configure do
   set :app_key, ENV["app_key"]
@@ -21,5 +23,13 @@ post '/' do
   data = request[:imagedata][:tempfile].read
   hash = Digest::MD5.hexdigest(data)
   file = @client.put_file("#{hash}.png", data)
-  @client.shares(file["path"])["url"]
+  uri = URI(@client.shares(file["path"])["url"])
+  https = Net::HTTP.new(uri.host, uri.port)
+  https.use_ssl = true
+  https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+  https.start do
+    response = https.get(uri.path)
+    url = response.body.scan(/(https:\/\/photos-\d\.dropbox\.com\/.+?)(?:"|')/)[0][0]
+  end
+  url
 end
